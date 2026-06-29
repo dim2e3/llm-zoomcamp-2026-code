@@ -5,3 +5,4 @@ faq_vectors2*
 __pycache__
 .db-shm
 .db-wal
+llm-zoomcamp-hw2/models/
