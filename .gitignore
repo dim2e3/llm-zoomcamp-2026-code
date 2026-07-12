@@ -6,3 +6,4 @@ __pycache__
 .db-shm
 .db-wal
 llm-zoomcamp-hw2/models/
+homework/04-evaluation/models/
