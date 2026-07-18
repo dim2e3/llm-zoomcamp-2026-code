@@ -29,3 +29,8 @@ dev = [
     "huggingface-hub>=1.21.0",
     "jupyter>=1.1.1",
 ]
+
+[tool.uv.workspace]
+members = [
+    "homework/05-monitoring",
+]
