@@ -1,0 +1,8 @@
+.env
+data/jdg_docs.json
+data/ground_truth_faq.json
+data/ground_truth_llm.json
+data/retrieval_eval_results.json
+.venv/
+__pycache__/
+*.pyc

@@ -1,0 +1,87 @@
+{
+  "title": "JDG Guide Assistant",
+  "uid": "jdg-assistant",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "browser",
+  "time": { "from": "now-30d", "to": "now" },
+  "refresh": "30s",
+  "panels": [
+    { "id": 1, "type": "stat", "title": "Total conversations",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT COUNT(*) AS \"Total\" FROM conversations" } ] },
+
+    { "id": 2, "type": "stat", "title": "Total cost",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 4 }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT COALESCE(SUM(cost),0) AS \"Total Cost\" FROM conversations" } ] },
+
+    { "id": 3, "type": "stat", "title": "Avg response time",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "s", "decimals": 2 }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT COALESCE(AVG(response_time),0) AS \"Avg Response Time\" FROM conversations" } ] },
+
+    { "id": 4, "type": "stat", "title": "Avg prompt tokens",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "none", "decimals": 0 }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT COALESCE(AVG(prompt_tokens),0) AS \"Avg Prompt Tokens\" FROM conversations" } ] },
+
+    { "id": 5, "type": "timeseries", "title": "Cost over time",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "time_series", "rawSql": "SELECT timestamp AS \"time\", cost AS \"Cost\" FROM conversations ORDER BY timestamp" } ] },
+
+    { "id": 6, "type": "timeseries", "title": "Response time over time",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "time_series", "rawSql": "SELECT timestamp AS \"time\", response_time AS \"Response Time\" FROM conversations ORDER BY timestamp" } ] },
+
+    { "id": 7, "type": "barchart", "title": "Cost by retrieval strategy",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT strategy, SUM(cost) AS \"Total Cost\" FROM conversations GROUP BY strategy ORDER BY strategy" } ] },
+
+    { "id": 8, "type": "barchart", "title": "Cost by language",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT lang, SUM(cost) AS \"Total Cost\" FROM conversations GROUP BY lang ORDER BY lang" } ] },
+
+    { "id": 9, "type": "barchart", "title": "Avg prompt tokens by strategy",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT strategy, AVG(prompt_tokens) AS \"Avg Prompt Tokens\" FROM conversations GROUP BY strategy ORDER BY strategy" } ] },
+
+    { "id": 10, "type": "barchart", "title": "Judge relevance",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT relevance, COUNT(*) AS \"Count\" FROM feedback WHERE source = 'judge' GROUP BY relevance ORDER BY relevance" } ] },
+
+    { "id": 11, "type": "stat", "title": "Thumbs up",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 20 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "none", "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT COUNT(*) FILTER (WHERE score > 0) AS \"Thumbs Up\" FROM feedback WHERE source = 'user'" } ] },
+
+    { "id": 12, "type": "stat", "title": "Thumbs down",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 20 },
+      "datasource": { "type": "postgres", "uid": "jdg_postgres" },
+      "fieldConfig": { "defaults": { "unit": "none", "color": { "mode": "fixed", "fixedColor": "red" } }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawSql": "SELECT COUNT(*) FILTER (WHERE score < 0) AS \"Thumbs Down\" FROM feedback WHERE source = 'user'" } ] },
+
+    { "id": 13, "type": "text", "title": "",
+      "gridPos": { "h": 4, "w": 12, "x": 12, "y": 24 },
+      "options": { "mode": "markdown", "content": "No data yet? Ask a question in the chat app (http://localhost:8501), or run `make generate-data` to seed sample rows." } }
+  ]
+}
